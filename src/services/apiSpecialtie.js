@@ -2,11 +2,15 @@ import axios from 'axios';
 
 export const getSpecialties = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/specialty`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/specialty`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -14,13 +18,18 @@ export const getSpecialties = async () => {
     throw new Error('Lỗi khi lấy danh sách chuyên khoa');
   }
 };
+
 export const getSpecialtiesByID = async (id) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/specialty/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/specialty/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -28,13 +37,18 @@ export const getSpecialtiesByID = async (id) => {
     throw new Error('Lỗi khi lấy danh sách chuyên khoa theo ID');
   }
 };
+
 export const getDoctorSpecialties = async (id) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/specialty/doctor/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/specialty/doctor/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -51,6 +65,7 @@ export const registerSpecialty = async (data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -64,11 +79,15 @@ export const registerSpecialty = async (data) => {
 
 export const deleteSpecialty = async (id) => {
   try {
-    const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/specialty/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.delete(
+      `${process.env.REACT_APP_API_BASE_URL}/specialty/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -85,6 +104,7 @@ export const updateSpecialty = async (id, data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );

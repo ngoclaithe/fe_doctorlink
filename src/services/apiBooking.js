@@ -2,11 +2,15 @@ import axios from 'axios';
 
 export const getBookings = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/danhsachlichkham`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/api/danhsachlichkham`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -15,14 +19,17 @@ export const getBookings = async () => {
   }
 };
 
-
 export const getBookingsByID = async (id) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/danhsachlichkham/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/api/danhsachlichkham/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -31,16 +38,16 @@ export const getBookingsByID = async (id) => {
   }
 };
 
-
 export const registerBooking = async (data) => {
   try {
-    console.log("Data gửi lên backend",data);
+    console.log("Data gửi lên backend", data);
     const response = await axios.post(
       `${process.env.REACT_APP_API_BASE_URL}/api/dangkylichkham`,
       data,
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -52,14 +59,17 @@ export const registerBooking = async (data) => {
   }
 };
 
-
 export const deleteBooking = async (id) => {
   try {
-    const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/xoalichkham/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.delete(
+      `${process.env.REACT_APP_API_BASE_URL}/api/xoalichkham/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -67,7 +77,6 @@ export const deleteBooking = async (id) => {
     throw new Error('Lỗi khi xóa chuyên khoa');
   }
 };
-
 
 export const updateBooking = async (id, data) => {
   try {
@@ -77,6 +86,7 @@ export const updateBooking = async (id, data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -113,6 +123,7 @@ export const checkBookingByDoctorAndDate = async (id, data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -125,10 +136,8 @@ export const checkBookingByDoctorAndDate = async (id, data) => {
   }
 };
 
-
 export const checkBookingByDoctor = async (id, data) => {
   try {
-
     console.log('Giá trị trước khi gọi BACKEND của doctorid:', data.doctorid);
 
     const response = await axios.post(
@@ -139,6 +148,7 @@ export const checkBookingByDoctor = async (id, data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );

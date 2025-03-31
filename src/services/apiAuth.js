@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL, 
-  withCredentials: true, 
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'ngrok-skip-browser-warning': 'true',
+  },
 });
 
 export const login = async (email, password) => {
@@ -10,19 +13,18 @@ export const login = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
-    
+
     const response = await api.post('/user/login', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    
+
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Something went wrong!';
   }
 };
-
 
 export const checkLogin = async () => {
   try {
@@ -45,15 +47,18 @@ export const changePassword = async (userId, newPassword) => {
     throw error.response?.data?.message || 'Something went wrong!';
   }
 };
+
 export const getAllUser = async (data) => {
   try {
-    const response = await api.post('/user/users',       
+    const response = await api.post(
+      '/user/users',
       data,
       {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }
+    );
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Something went wrong!';
@@ -94,13 +99,14 @@ export const updateUser = async (id, data) => {
     throw new Error('Lỗi khi sửa thông tin người dùng');
   }
 };
+
 export const registerUser = async (userData) => {
   try {
     const payload = {
       username: userData.username,
       email: userData.email,
       password: userData.password,
-      role: userData.role,  
+      role: userData.role,
     };
 
     const response = await api.post('/user/register', payload, {

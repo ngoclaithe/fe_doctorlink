@@ -1,13 +1,16 @@
 import axios from 'axios';
 
-
 export const getDoctor = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/detail-doctor`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/detail-doctor`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -24,6 +27,7 @@ export const registerDoctor = async (data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -37,11 +41,15 @@ export const registerDoctor = async (data) => {
 
 export const deleteDoctor = async (id) => {
   try {
-    const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/detail-doctor${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.delete(
+      `${process.env.REACT_APP_API_BASE_URL}/detail-doctor${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -58,6 +66,7 @@ export const updateDoctor = async (id, data) => {
       {
         headers: {
           'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
@@ -68,13 +77,18 @@ export const updateDoctor = async (id, data) => {
     throw new Error('Lỗi khi sửa thông tin chuyên khoa');
   }
 };
+
 export const getDoctorClinics = async (id) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/bacsicoso/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/api/bacsicoso/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -82,13 +96,18 @@ export const getDoctorClinics = async (id) => {
     throw new Error('Lỗi khi lấy danh sách chuyên khoa theo ID');
   }
 };
+
 export const getDoctorById = async (id) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/detail-doctor/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/detail-doctor/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
