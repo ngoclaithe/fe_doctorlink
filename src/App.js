@@ -12,6 +12,7 @@ import RegisterPage from './pages/Auth/register';
 import AdminPage from './pages/Admin/adminPage';
 import DoctorPageAdmin from './pages/Admin/doctorPage';
 import SpecialtyManagement from './pages/Admin/SpecialtyManagement';
+import ServiceManagement from './pages/Admin/ServiceManagement';
 import ClinicPageAdmin from './pages/Admin/clinicPage';
 import BookingPageAdmin from './pages/Admin/bookingPage';
 import UserPageAdmin from './pages/Admin/userPage';
@@ -39,7 +40,8 @@ function App() {
         <Route path="/taikhoanbacsi" element={<AccountDoctorPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/users/doctors" element={<DoctorPageAdmin />} />
-        <Route path="/admin/specialty" element={<SpecialtyManagement />} /> 
+        <Route path="/admin/specialty" element={<SpecialtyManagement />} />
+        <Route path="/admin/service" element={<ServiceManagement />} />
         <Route path="/admin/coso" element={<ClinicPageAdmin />} />
         <Route path="/admin/lichkham" element={<BookingPageAdmin />} />
         <Route path="/admin/users/users" element={<UserPageAdmin />} />
