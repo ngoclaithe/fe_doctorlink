@@ -23,6 +23,9 @@ import AccountDoctorPage from './pages/RoleDoctor/account';
 import BookingDoctorPage from './pages/RoleDoctor/bookingOfDoctor';
 import ChangePasswordDoctorPage from './pages/RoleDoctor/changePassword';
 import ShiftManagement from './pages/Admin/ShiftManagement';
+import ReviewPage from './pages/Admin/ReviewPage';
+import BillPage from './pages/Admin/BillPage';
+import hosobenhanPage from './pages/Admin/hosobenhanPage';
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
         <Route path="/admin/coso" element={<ClinicPageAdmin />} />
         <Route path="/admin/lichkham" element={<BookingPageAdmin />} />
         <Route path="/admin/users/users" element={<UserPageAdmin />} />
+        <Route path="/admin/review" element={<ReviewPage />} />
+        <Route path="/admin/billing" element={<BillPage />} />
+        <Route path="/admin/medical-records" element={<hosobenhanPage />} />
         <Route path="/lichkham" element={<BookingGuestPage />} />
         <Route path="/lichkhambacsi" element={<BookingDoctorPage />} />
         <Route path="/doimatkhau" element={<ChangePasswordGuestPage />} />

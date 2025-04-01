@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { caLamViecApi, caKhamBenhApi } from '../../services/apiShift';
+import { getDoctor } from '../../services/apiDoctor';
 import Layout from '../../components/layoutAdmin/Layout';
 import { Table, Button, Modal, Form, DatePicker, Select, message, Spin, Tabs } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
@@ -9,34 +10,58 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 
 const ShiftManagement = () => {
-    // State cho ca làm việc
     const [caLamViecs, setCaLamViecs] = useState([]);
     const [selectedCaLamViec, setSelectedCaLamViec] = useState(null);
     const [caLamViecModalVisible, setCaLamViecModalVisible] = useState(false);
     const [caLamViecForm] = Form.useForm();
     
-    // State cho ca khám bệnh
     const [caKhamBenhs, setCaKhamBenhs] = useState([]);
     const [selectedCaKhamBenh, setSelectedCaKhamBenh] = useState(null);
     const [caKhamBenhModalVisible, setCaKhamBenhModalVisible] = useState(false);
     const [caKhamBenhForm] = Form.useForm();
     
-    // State chung
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [doctorId, setDoctorId] = useState(1); // ID bác sĩ, có thể lấy từ context hoặc params
+    const [doctorId, setDoctorId] = useState(null);
     const [sessionDate, setSessionDate] = useState(moment().format('YYYY-MM-DD'));
+    const [doctors, setDoctors] = useState([]);
+    const [selectedDoctor, setSelectedDoctor] = useState(null);
     
-    // Định nghĩa trạng thái ca khám bệnh
+    const serviceTypes = [
+        { value: 'kham_tai_nha', label: 'Khám tại nhà' },
+        { value: 'tu_van_online', label: 'Tư vấn online' }
+    ];
+    
     const sessionStatuses = [
-        { value: 'PENDING', label: 'Chờ khám' },
-        { value: 'IN_PROGRESS', label: 'Đang khám' },
-        { value: 'COMPLETED', label: 'Đã hoàn thành' },
-        { value: 'CANCELED', label: 'Đã hủy' }
+        { value: 'available', label: 'Có sẵn' },
+        { value: 'booked', label: 'Đã đặt' },
+        { value: 'cancelled', label: 'Đã hủy' }
     ];
 
-    // Fetch ca làm việc
+    // Fetch all doctors
+    const fetchDoctors = async () => {
+        try {
+            setLoading(true);
+            const data = await getDoctor();
+            setDoctors(data);
+            
+            // If this is initial load and we don't have a doctorId selected, 
+            // set the first doctor as default if available
+            if (!doctorId && data.length > 0) {
+                setDoctorId(data[0].user_id);
+                setSelectedDoctor(data[0]);
+            }
+        } catch (err) {
+            console.error("Lỗi khi lấy danh sách bác sĩ:", err);
+            message.error("Không thể tải danh sách bác sĩ");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchCaLamViecs = async () => {
+        if (!doctorId) return;
+        
         try {
             setLoading(true);
             const data = await caLamViecApi.getByDoctor(doctorId, sessionDate);
@@ -51,7 +76,6 @@ const ShiftManagement = () => {
         }
     };
 
-    // Fetch ca khám bệnh theo ca làm việc
     const fetchCaKhamBenhs = async (caLamViecId) => {
         try {
             setLoading(true);
@@ -67,8 +91,9 @@ const ShiftManagement = () => {
         }
     };
 
-    // Fetch ca khám bệnh theo bác sĩ và ngày
     const fetchCaKhamBenhsByDoctor = async () => {
+        if (!doctorId) return;
+        
         try {
             setLoading(true);
             const data = await caKhamBenhApi.getByDoctor(doctorId, sessionDate);
@@ -83,31 +108,57 @@ const ShiftManagement = () => {
         }
     };
 
+    // Initial data loading
     useEffect(() => {
-        fetchCaLamViecs();
-        fetchCaKhamBenhsByDoctor();
-    }, [doctorId, sessionDate]);
+        fetchDoctors();
+    }, []);
 
-    // Thêm ca làm việc mới
-    const handleAddCaLamViec = () => {
-        setSelectedCaLamViec(null);
-        caLamViecForm.resetFields();
-        setCaLamViecModalVisible(true);
+    // Effect to load data when doctorId or sessionDate changes
+    useEffect(() => {
+        if (doctorId) {
+            fetchCaLamViecs();
+            fetchCaKhamBenhsByDoctor();
+            
+            // Find selected doctor from doctors array based on doctorId
+            const doctor = doctors.find(doc => doc.user_id === doctorId);
+            if (doctor) {
+                setSelectedDoctor(doctor);
+            }
+        }
+    }, [doctorId, sessionDate, doctors]);
+
+    const handleDoctorChange = (value) => {
+        setDoctorId(value);
     };
 
-    // Chỉnh sửa ca làm việc
-    const handleEditCaLamViec = (record) => {
-        setSelectedCaLamViec(record);
+    const handleAddCaLamViec = () => {
+        if (!doctorId) {
+            message.warning("Vui lòng chọn bác sĩ trước khi thêm ca làm việc");
+            return;
+        }
+        
+        setSelectedCaLamViec(null);
+        caLamViecForm.resetFields();
         caLamViecForm.setFieldsValue({
-            ...record,
-            ngay_lam_viec: moment(record.ngay_lam_viec),
-            gio_bat_dau: moment(record.gio_bat_dau, 'HH:mm'),
-            gio_ket_thuc: moment(record.gio_ket_thuc, 'HH:mm')
+            session_date: moment(sessionDate),
+            doctor_id: doctorId
         });
         setCaLamViecModalVisible(true);
     };
 
-    // Xóa ca làm việc
+    const handleEditCaLamViec = (record) => {
+        setSelectedCaLamViec(record);
+        caLamViecForm.setFieldsValue({
+            ...record,
+            session_date: moment(record.session_date),
+            start_time: moment(record.start_time, 'HH:mm'),
+            end_time: moment(record.end_time, 'HH:mm'),
+            service_type: record.service_type,
+            doctor_id: record.doctor_id || doctorId
+        });
+        setCaLamViecModalVisible(true);
+    };
+
     const handleDeleteCaLamViec = async (id) => {
         try {
             await caLamViecApi.delete(id);
@@ -125,10 +176,10 @@ const ShiftManagement = () => {
             const values = await caLamViecForm.validateFields();
             const formattedValues = {
                 ...values,
-                ngay_lam_viec: values.ngay_lam_viec.format('YYYY-MM-DD'),
-                gio_bat_dau: values.gio_bat_dau.format('HH:mm'),
-                gio_ket_thuc: values.gio_ket_thuc.format('HH:mm'),
-                bac_si_id: doctorId
+                session_date: values.session_date.format('YYYY-MM-DD'),
+                start_time: values.start_time.format('HH:mm'),
+                end_time: values.end_time.format('HH:mm'),
+                doctor_id: values.doctor_id || doctorId
             };
 
             if (selectedCaLamViec) {
@@ -147,27 +198,27 @@ const ShiftManagement = () => {
         }
     };
 
-    // Chỉnh sửa ca khám bệnh
     const handleEditCaKhamBenh = (record) => {
         setSelectedCaKhamBenh(record);
         caKhamBenhForm.setFieldsValue({
             ...record,
-            ngay_kham: moment(record.ngay_kham),
-            gio_bat_dau: moment(record.gio_bat_dau, 'HH:mm'),
-            gio_ket_thuc: moment(record.gio_ket_thuc, 'HH:mm')
+            session_date: moment(record.session_date),
+            start_time: moment(record.start_time, 'HH:mm'),
+            end_time: moment(record.end_time, 'HH:mm'),
+            service_type: record.service_type,
+            status: record.status
         });
         setCaKhamBenhModalVisible(true);
     };
 
-    // Lưu ca khám bệnh (cập nhật)
     const handleSaveCaKhamBenh = async () => {
         try {
             const values = await caKhamBenhForm.validateFields();
             const formattedValues = {
                 ...values,
-                ngay_kham: values.ngay_kham.format('YYYY-MM-DD'),
-                gio_bat_dau: values.gio_bat_dau.format('HH:mm'),
-                gio_ket_thuc: values.gio_ket_thuc.format('HH:mm')
+                session_date: values.session_date.format('YYYY-MM-DD'),
+                start_time: values.start_time.format('HH:mm'),
+                end_time: values.end_time.format('HH:mm')
             };
 
             await caKhamBenhApi.update(selectedCaKhamBenh.id, formattedValues);
@@ -180,12 +231,10 @@ const ShiftManagement = () => {
         }
     };
 
-    // Hiển thị ca khám bệnh của ca làm việc
     const handleViewCaKhamBenh = (caLamViecId) => {
         fetchCaKhamBenhs(caLamViecId);
     };
 
-    // Cột cho bảng ca làm việc
     const caLamViecColumns = [
         {
             title: 'ID',
@@ -194,24 +243,28 @@ const ShiftManagement = () => {
         },
         {
             title: 'Ngày làm việc',
-            dataIndex: 'ngay_lam_viec',
-            key: 'ngay_lam_viec',
+            dataIndex: 'session_date',
+            key: 'session_date',
             render: (text) => moment(text).format('DD/MM/YYYY')
         },
         {
             title: 'Giờ bắt đầu',
-            dataIndex: 'gio_bat_dau',
-            key: 'gio_bat_dau',
+            dataIndex: 'start_time',
+            key: 'start_time',
         },
         {
             title: 'Giờ kết thúc',
-            dataIndex: 'gio_ket_thuc',
-            key: 'gio_ket_thuc',
+            dataIndex: 'end_time',
+            key: 'end_time',
         },
         {
-            title: 'Số lượng tối đa',
-            dataIndex: 'so_luong_toi_da',
-            key: 'so_luong_toi_da',
+            title: 'Loại dịch vụ',
+            dataIndex: 'service_type',
+            key: 'service_type',
+            render: (type) => {
+                const serviceType = serviceTypes.find(s => s.value === type);
+                return serviceType ? serviceType.label : type;
+            }
         },
         {
             title: 'Thao tác',
@@ -238,7 +291,6 @@ const ShiftManagement = () => {
         },
     ];
 
-    // Cột cho bảng ca khám bệnh
     const caKhamBenhColumns = [
         {
             title: 'ID',
@@ -252,24 +304,33 @@ const ShiftManagement = () => {
         },
         {
             title: 'Ngày khám',
-            dataIndex: 'ngay_kham',
-            key: 'ngay_kham',
+            dataIndex: 'session_date',
+            key: 'session_date',
             render: (text) => moment(text).format('DD/MM/YYYY')
         },
         {
             title: 'Giờ bắt đầu',
-            dataIndex: 'gio_bat_dau',
-            key: 'gio_bat_dau',
+            dataIndex: 'start_time',
+            key: 'start_time',
         },
         {
             title: 'Giờ kết thúc',
-            dataIndex: 'gio_ket_thuc',
-            key: 'gio_ket_thuc',
+            dataIndex: 'end_time',
+            key: 'end_time',
+        },
+        {
+            title: 'Loại dịch vụ',
+            dataIndex: 'service_type',
+            key: 'service_type',
+            render: (type) => {
+                const serviceType = serviceTypes.find(s => s.value === type);
+                return serviceType ? serviceType.label : type;
+            }
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'trang_thai',
-            key: 'trang_thai',
+            dataIndex: 'status',
+            key: 'status',
             render: (status) => {
                 const statusObj = sessionStatuses.find(s => s.value === status);
                 return statusObj ? statusObj.label : status;
@@ -287,7 +348,6 @@ const ShiftManagement = () => {
         },
     ];
 
-    // Filter cho ngày
     const handleDateChange = (date) => {
         setSessionDate(date ? date.format('YYYY-MM-DD') : null);
     };
@@ -298,6 +358,21 @@ const ShiftManagement = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Quản lý Ca Làm Việc</h1>
                     <div className="flex items-center">
+                        {/* Doctor selector */}
+                        <Select
+                            placeholder="Chọn bác sĩ"
+                            style={{ width: 200, marginRight: 16 }}
+                            onChange={handleDoctorChange}
+                            value={doctorId}
+                            loading={loading && !doctors.length}
+                        >
+                            {doctors.map(doctor => (
+                                <Option key={doctor.user_id} value={doctor.user_id}>
+                                    {doctor.full_name || `Bác sĩ #${doctor.user_id}`}
+                                </Option>
+                            ))}
+                        </Select>
+                        
                         <DatePicker 
                             onChange={handleDateChange} 
                             defaultValue={moment(sessionDate)}
@@ -308,6 +383,7 @@ const ShiftManagement = () => {
                             type="primary" 
                             icon={<PlusOutlined />} 
                             onClick={handleAddCaLamViec}
+                            disabled={!doctorId}
                         >
                             Thêm Ca Làm Việc
                         </Button>
@@ -315,31 +391,56 @@ const ShiftManagement = () => {
                 </div>
 
                 {error && <div className="text-red-500 mb-4">{error}</div>}
+                
+                {selectedDoctor && (
+                    <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                        <h2 className="text-lg font-semibold">Thông tin bác sĩ</h2>
+                        <div className="flex mt-2">
+                            <div className="mr-4">
+                                <p><strong>Họ tên:</strong> {selectedDoctor.full_name}</p>
+                                <p><strong>Chuyên khoa:</strong> {selectedDoctor.specialty_id}</p>
+                            </div>
+                            <div>
+                                <p><strong>Email:</strong> {selectedDoctor.email || 'Chưa cập nhật'}</p>
+                                <p><strong>Số điện thoại:</strong> {selectedDoctor.phone}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-                <Tabs defaultActiveKey="1">
-                    <TabPane tab="Ca Làm Việc" key="1">
-                        <Spin spinning={loading}>
-                            <Table 
-                                dataSource={caLamViecs} 
-                                columns={caLamViecColumns} 
-                                rowKey="id"
-                                pagination={{ pageSize: 10 }}
-                            />
-                        </Spin>
-                    </TabPane>
-                    <TabPane tab="Ca Khám Bệnh" key="2">
-                        <Spin spinning={loading}>
-                            <Table 
-                                dataSource={caKhamBenhs} 
-                                columns={caKhamBenhColumns} 
-                                rowKey="id"
-                                pagination={{ pageSize: 10 }}
-                            />
-                        </Spin>
-                    </TabPane>
-                </Tabs>
+                {!doctorId && (
+                    <div className="text-center p-8">
+                        <p className="text-lg text-gray-500">Vui lòng chọn bác sĩ để xem ca làm việc và ca khám bệnh</p>
+                    </div>
+                )}
 
-                {/* Modal cho Ca Làm Việc */}
+                {doctorId && (
+                    <Tabs defaultActiveKey="1">
+                        <TabPane tab="Ca Làm Việc" key="1">
+                            <Spin spinning={loading}>
+                                <Table 
+                                    dataSource={caLamViecs} 
+                                    columns={caLamViecColumns} 
+                                    rowKey="id"
+                                    pagination={{ pageSize: 10 }}
+                                    locale={{ emptyText: 'Không có ca làm việc nào' }}
+                                />
+                            </Spin>
+                        </TabPane>
+                        <TabPane tab="Ca Khám Bệnh" key="2">
+                            <Spin spinning={loading}>
+                                <Table 
+                                    dataSource={caKhamBenhs} 
+                                    columns={caKhamBenhColumns} 
+                                    rowKey="id"
+                                    pagination={{ pageSize: 10 }}
+                                    locale={{ emptyText: 'Không có ca khám bệnh nào' }}
+                                />
+                            </Spin>
+                        </TabPane>
+                    </Tabs>
+                )}
+
                 <Modal
                     title={selectedCaLamViec ? "Chỉnh sửa Ca Làm Việc" : "Thêm Ca Làm Việc"}
                     visible={caLamViecModalVisible}
@@ -352,33 +453,47 @@ const ShiftManagement = () => {
                         form={caLamViecForm}
                         layout="vertical"
                     >
+                        {/* Hidden field for doctor_id */}
                         <Form.Item
-                            name="ngay_lam_viec"
+                            name="doctor_id"
+                            hidden
+                        >
+                            <input type="hidden" />
+                        </Form.Item>
+                        
+                        <Form.Item
+                            name="session_date"
                             label="Ngày làm việc"
                             rules={[{ required: true, message: 'Vui lòng chọn ngày làm việc' }]}
                         >
                             <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="gio_bat_dau"
+                            name="start_time"
                             label="Giờ bắt đầu"
                             rules={[{ required: true, message: 'Vui lòng nhập giờ bắt đầu' }]}
                         >
                             <DatePicker.TimePicker format="HH:mm" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="gio_ket_thuc"
+                            name="end_time"
                             label="Giờ kết thúc"
                             rules={[{ required: true, message: 'Vui lòng nhập giờ kết thúc' }]}
                         >
                             <DatePicker.TimePicker format="HH:mm" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="so_luong_toi_da"
-                            label="Số lượng tối đa"
-                            rules={[{ required: true, message: 'Vui lòng nhập số lượng tối đa' }]}
+                            name="service_type"
+                            label="Loại dịch vụ"
+                            rules={[{ required: true, message: 'Vui lòng chọn loại dịch vụ' }]}
                         >
-                            <input type="number" className="w-full p-2 border rounded" min={1} />
+                            <Select>
+                                {serviceTypes.map(type => (
+                                    <Option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                         <Form.Item
                             name="ghi_chu"
@@ -389,7 +504,6 @@ const ShiftManagement = () => {
                     </Form>
                 </Modal>
 
-                {/* Modal cho Ca Khám Bệnh */}
                 <Modal
                     title="Chỉnh sửa Ca Khám Bệnh"
                     visible={caKhamBenhModalVisible}
@@ -403,28 +517,41 @@ const ShiftManagement = () => {
                         layout="vertical"
                     >
                         <Form.Item
-                            name="ngay_kham"
+                            name="session_date"
                             label="Ngày khám"
                             rules={[{ required: true, message: 'Vui lòng chọn ngày khám' }]}
                         >
                             <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="gio_bat_dau"
+                            name="start_time"
                             label="Giờ bắt đầu"
                             rules={[{ required: true, message: 'Vui lòng nhập giờ bắt đầu' }]}
                         >
                             <DatePicker.TimePicker format="HH:mm" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="gio_ket_thuc"
+                            name="end_time"
                             label="Giờ kết thúc"
                             rules={[{ required: true, message: 'Vui lòng nhập giờ kết thúc' }]}
                         >
                             <DatePicker.TimePicker format="HH:mm" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            name="trang_thai"
+                            name="service_type"
+                            label="Loại dịch vụ"
+                            rules={[{ required: true, message: 'Vui lòng chọn loại dịch vụ' }]}
+                        >
+                            <Select disabled>
+                                {serviceTypes.map(type => (
+                                    <Option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="status"
                             label="Trạng thái"
                             rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}
                         >

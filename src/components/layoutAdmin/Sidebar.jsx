@@ -38,7 +38,7 @@ const Sidebar = ({ id, isOpen, closeSidebar }) => {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, path: '/admin/dashboard' },
+    // { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, path: '/admin/dashboard' },
     { id: 'specialty', label: 'Quản lý chuyên khoa', icon: BeakerIcon, path: '/admin/specialty' },
     { id: 'service', label: 'Quản lý dịch vụ', icon: DocumentTextIcon, path: '/admin/service' },
     { id: 'review', label: 'Quản lý đánh giá', icon: HandThumbUpIcon, path: '/admin/review' },
