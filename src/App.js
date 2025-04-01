@@ -11,7 +11,7 @@ import LoginPage from './pages/Auth/login';
 import RegisterPage from './pages/Auth/register';
 import AdminPage from './pages/Admin/adminPage';
 import DoctorPageAdmin from './pages/Admin/doctorPage';
-import SpecialtyPageAdmin from './pages/Admin/specialtyPage';
+import SpecialtyManagement from './pages/Admin/SpecialtyManagement';
 import ClinicPageAdmin from './pages/Admin/clinicPage';
 import BookingPageAdmin from './pages/Admin/bookingPage';
 import UserPageAdmin from './pages/Admin/userPage';
@@ -38,11 +38,11 @@ function App() {
         <Route path="/taikhoan" element={<AccountPage />} />
         <Route path="/taikhoanbacsi" element={<AccountDoctorPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/bacsi" element={<DoctorPageAdmin />} />
-        <Route path="/admin/chuyenkhoa" element={<SpecialtyPageAdmin />} />
+        <Route path="/admin/users/doctors" element={<DoctorPageAdmin />} />
+        <Route path="/admin/specialty" element={<SpecialtyManagement />} /> 
         <Route path="/admin/coso" element={<ClinicPageAdmin />} />
         <Route path="/admin/lichkham" element={<BookingPageAdmin />} />
-        <Route path="/admin/nguoidung" element={<UserPageAdmin />} />
+        <Route path="/admin/users/users" element={<UserPageAdmin />} />
         <Route path="/lichkham" element={<BookingGuestPage />} />
         <Route path="/lichkhambacsi" element={<BookingDoctorPage />} />
         <Route path="/doimatkhau" element={<ChangePasswordGuestPage />} />

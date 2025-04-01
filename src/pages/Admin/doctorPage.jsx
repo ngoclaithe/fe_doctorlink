@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getDoctor, deleteDoctor, registerDoctor, updateDoctor } from '../../services/apiDoctor';
 import DoctorModal from '../../components/modal/doctorModal';
-import Sidebar from '../../components/layout/Sidebar';
+import Layout from '../../components/layoutAdmin/Layout';
 
 const DoctorPageAdmin = () => {
     const [doctors, setDoctors] = useState([]);
@@ -9,19 +9,26 @@ const DoctorPageAdmin = () => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
 
     useEffect(() => {
-        const fetchDoctors = async () => {
-            const result = await getDoctor();
-            console.log(result);
-            setDoctors(result);
-        };
-
         fetchDoctors();
     }, []);
 
+    const fetchDoctors = async () => {
+        try {
+            const result = await getDoctor();
+            console.log(result);
+            setDoctors(result);
+        } catch (error) {
+            console.error("Error fetching doctors:", error);
+        }
+    };
+
     const handleDelete = async (id) => {
-        await deleteDoctor(id);
-        const result = await getDoctor();
-        setDoctors(result);
+        try {
+            await deleteDoctor(id);
+            fetchDoctors();
+        } catch (error) {
+            console.error("Error deleting doctor:", error);
+        }
     };
 
     const handleEdit = (doctor) => {
@@ -44,20 +51,20 @@ const DoctorPageAdmin = () => {
                 console.log("Sending data to backend:", doctorData);
                 await registerDoctor(doctorData);
             }
-            const result = await getDoctor();
-            setDoctors(result);
+            fetchDoctors();
             setIsModalOpen(false);  
         } catch (error) {
             console.error("Error saving doctor:", error);
         }
+    };
 
+    const handleImageError = (e) => {
+        e.target.src = require('../../assets/images/bacsi/default.jpg');
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
-
-            <div className="flex-1 p-6">
+        <Layout>
+            <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Danh sách bác sĩ</h1>
                     <button
@@ -72,8 +79,11 @@ const DoctorPageAdmin = () => {
                     <table className="table-auto w-full border-collapse border border-gray-300">
                         <thead className="bg-gray-200 text-gray-700">
                             <tr>
+                                <th className="border border-gray-300 px-4 py-2">Ảnh</th>
                                 <th className="border border-gray-300 px-4 py-2">Tên</th>
                                 <th className="border border-gray-300 px-4 py-2">Chuyên khoa</th>
+                                <th className="border border-gray-300 px-4 py-2">Số năm KN</th>
+                                <th className="border border-gray-300 px-4 py-2">Đánh giá</th>
                                 <th className="border border-gray-300 px-4 py-2">Mô tả</th>
                                 <th className="border border-gray-300 px-4 py-2">Hành động</th>
                             </tr>
@@ -82,12 +92,23 @@ const DoctorPageAdmin = () => {
                             {doctors.length > 0 ? (
                                 doctors.map((doctor) => (
                                     <tr key={doctor.id} className="hover:bg-gray-100">
-                                        <td className="border border-gray-300 px-4 py-2">{doctor.name}</td>
-
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <div className="flex justify-center">
+                                                <img 
+                                                    src={doctor.image_url ? require(`../../assets/images/bacsi/${doctor.image_url}`) : require('../../assets/images/bacsi/default.jpg')} 
+                                                    alt={`Bác sĩ ${doctor.full_name}`} 
+                                                    className="w-16 h-16 rounded-full object-cover border-2 border-blue-300 shadow-md" 
+                                                    onError={handleImageError}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2">{doctor.full_name}</td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             {doctor.specialty?.name || 'Không xác định'}
                                         </td>
-                                        <td className="border border-gray-300 px-4 py-2">{doctor.note}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{doctor.experience_years}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{doctor.avg_rating}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{doctor.bio}</td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             <button
                                                 className="text-blue-600 hover:underline mr-4"
@@ -106,7 +127,7 @@ const DoctorPageAdmin = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center text-gray-500 py-4">
+                                    <td colSpan="7" className="text-center text-gray-500 py-4">
                                         Không có bác sĩ nào được tìm thấy.
                                     </td>
                                 </tr>
@@ -124,7 +145,7 @@ const DoctorPageAdmin = () => {
                     />
                 )}
             </div>
-        </div>
+        </Layout>
     );
 };
 

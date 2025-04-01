@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getSpecialties, deleteSpecialty, registerSpecialty, updateSpecialty } from '../../services/apiSpecialtie';
 import SpecialtyModal from '../../components/modal/specialtyModal';
-import Sidebar from '../../components/layout/Sidebar';
+import Layout from '../../components/layoutAdmin/Layout';
 
-const SpecialtyPageAdmin = () => {
+const SpecialtyManagement = () => {
     const [specialties, setSpecialties] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpecialty, setSelectedSpecialty] = useState(null);
@@ -47,17 +47,14 @@ const SpecialtyPageAdmin = () => {
             const result = await getSpecialties();
             setSpecialties(result);
             setIsModalOpen(false);
-        }catch (error) {
+        } catch (error) {
             console.error("Error saving doctor:", error);
         }
-
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
-
-            <div className="flex-1 p-6">
+        <Layout>
+            <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Danh sách chuyên khoa</h1>
                     <button
@@ -84,9 +81,8 @@ const SpecialtyPageAdmin = () => {
                                         <td className="border border-gray-300 px-4 py-2">{specialty.name}</td>
 
                                         <td className="border border-gray-300 px-4 py-2">
-                                            {specialty?.descriptionHTML || 'Không xác định'}
+                                            {specialty?.description || 'Không xác định'}
                                         </td>
-                                        {/* <td className="border border-gray-300 px-4 py-2">{specialty.note}</td> */}
                                         <td className="border border-gray-300 px-4 py-2">
                                             <button
                                                 className="text-blue-600 hover:underline mr-4"
@@ -106,7 +102,7 @@ const SpecialtyPageAdmin = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="3" className="text-center text-gray-500 py-4">
-                                        Không có dât.
+                                        Không có dữ liệu.
                                     </td>
                                 </tr>
                             )}
@@ -123,8 +119,8 @@ const SpecialtyPageAdmin = () => {
                     />
                 )}
             </div>
-        </div>
+        </Layout>
     );
 };
 
-export default SpecialtyPageAdmin;
+export default SpecialtyManagement;

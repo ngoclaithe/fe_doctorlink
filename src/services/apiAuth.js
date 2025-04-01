@@ -50,7 +50,7 @@ export const changePassword = async (userId, newPassword) => {
 
 export const getAllUser = async (data) => {
   try {
-    const response = await api.post(
+    const response = await api.get(
       '/user/users',
       data,
       {

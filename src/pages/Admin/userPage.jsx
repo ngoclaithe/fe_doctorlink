@@ -1,53 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import { getAllUser, deleteUser, updateUser } from '../../services/apiAuth';
-
-import Sidebar from '../../components/layout/Sidebar';
-import TableUser from '../../components/common/tableUser'; 
+import TableUser from '../../components/common/tableUser';
+import Layout from '../../components/layoutAdmin/Layout';
 
 const UserPageAdmin = () => {
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchUsers = async () => {
+        try {
+            setLoading(true);
+            const result = await getAllUser();
+            setUsers(result);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching users:", err);
+            setError("Không thể tải danh sách người dùng");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const result = await getAllUser();
-            console.log(result);
-            setUsers(result);
-        };
-
         fetchUsers();
     }, []);
 
     const handleDelete = async (id) => {
-        await deleteUser(id);
-        const result = await getAllUser();
-        setUsers(result);
+        try {
+            await deleteUser(id);
+            // Remove user from state instead of re-fetching
+            setUsers(users.filter(user => user.id !== id));
+        } catch (err) {
+            console.error("Error deleting user:", err);
+            setError("Không thể xóa người dùng");
+        }
     };
 
     const handleEdit = async (user) => {
         try {
-            console.log("Đây là user.id nè:",user.id);
-            await updateUser(user.id, user);  
-            const result = await getAllUser();
-            setUsers(result);
-        } catch (error) {
-            console.error("Error updating user:", error);
+            await updateUser(user.id, user);
+            // Update user in state instead of re-fetching
+            setUsers(users.map(u => u.id === user.id ? user : u));
+        } catch (err) {
+            console.error("Error updating user:", err);
+            setError("Không thể cập nhật người dùng");
         }
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
-
-            <div className="flex-1 p-6">
+        <Layout>
+            <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Danh sách người dùng</h1>
+                    <button 
+                        onClick={fetchUsers} 
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                    >
+                        Làm mới
+                    </button>
                 </div>
 
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
+
                 <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <TableUser users={users} handleEdit={handleEdit} handleDelete={handleDelete} />
+                    {loading ? (
+                        <div className="p-4 flex justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                        </div>
+                    ) : users.length > 0 ? (
+                        <TableUser users={users} handleEdit={handleEdit} handleDelete={handleDelete} />
+                    ) : (
+                        <div className="p-4 text-center text-gray-500">
+                            Không có người dùng nào
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+        </Layout>
     );
 };
 
