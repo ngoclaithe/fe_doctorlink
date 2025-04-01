@@ -69,7 +69,6 @@ export const caLamViecApi = {
     }
   },
 
-  // Xóa ca làm việc
   delete: async (caLamViecId) => {
     try {
       const response = await api.delete(`/ca-lam-viec/${caLamViecId}`);

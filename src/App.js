@@ -22,6 +22,7 @@ import ChangePasswordGuestPage from './pages/Guest/changePassword';
 import AccountDoctorPage from './pages/RoleDoctor/account';
 import BookingDoctorPage from './pages/RoleDoctor/bookingOfDoctor';
 import ChangePasswordDoctorPage from './pages/RoleDoctor/changePassword';
+import ShiftManagement from './pages/Admin/ShiftManagement';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/admin/users/doctors" element={<DoctorPageAdmin />} />
         <Route path="/admin/specialty" element={<SpecialtyManagement />} />
         <Route path="/admin/service" element={<ServiceManagement />} />
+        <Route path="/admin/shifts" element={<ShiftManagement />} />
         <Route path="/admin/coso" element={<ClinicPageAdmin />} />
         <Route path="/admin/lichkham" element={<BookingPageAdmin />} />
         <Route path="/admin/users/users" element={<UserPageAdmin />} />
