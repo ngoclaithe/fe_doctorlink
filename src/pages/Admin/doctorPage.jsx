@@ -22,9 +22,9 @@ const DoctorPageAdmin = () => {
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (userId) => {
         try {
-            await deleteDoctor(id);
+            await deleteDoctor(userId);
             fetchDoctors();
         } catch (error) {
             console.error("Error deleting doctor:", error);
@@ -46,7 +46,7 @@ const DoctorPageAdmin = () => {
         try {
             if (selectedDoctor) {
                 // Update existing doctor
-                await updateDoctor(selectedDoctor.id, doctorData);
+                await updateDoctor(selectedDoctor.user_id, doctorData);
             } else {
                 console.log("Sending data to backend:", doctorData);
                 await registerDoctor(doctorData);
@@ -91,7 +91,7 @@ const DoctorPageAdmin = () => {
                         <tbody>
                             {doctors.length > 0 ? (
                                 doctors.map((doctor) => (
-                                    <tr key={doctor.id} className="hover:bg-gray-100">
+                                    <tr key={doctor.user_id} className="hover:bg-gray-100">
                                         <td className="border border-gray-300 px-4 py-2">
                                             <div className="flex justify-center">
                                                 <img 
@@ -118,7 +118,7 @@ const DoctorPageAdmin = () => {
                                             </button>
                                             <button
                                                 className="text-red-600 hover:underline"
-                                                onClick={() => handleDelete(doctor.id)}
+                                                onClick={() => handleDelete(doctor.user_id)}
                                             >
                                                 Xóa
                                             </button>
