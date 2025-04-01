@@ -8,7 +8,7 @@ import ServiceManagement from './ServiceManagement';
 // import ReviewManagement from './ReviewManagement';
 // import BillingManagement from './BillingManagement';
 // import DoctorManagement from './DoctorManagement';
-// import PatientManagement from './PatientManagement';
+import PatientManagement from './PatientManagement';
 // import MedicalRecordManagement from './MedicalRecordManagement';
 // import ShiftManagement from './ShiftManagement';
 
@@ -20,12 +20,13 @@ const AdminPage = () => {
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/specialty" element={<SpecialtyManagement />} />
                 <Route path="/service" element={<ServiceManagement />} />
+                <Route path="/users/patients" element={<PatientManagement />} />
+
 
                 {/* <Route path="/service" element={<ServiceManagement />} />
                 <Route path="/review" element={<ReviewManagement />} />
                 <Route path="/billing" element={<BillingManagement />} />
                 <Route path="/users/doctors" element={<DoctorManagement />} />
-                <Route path="/users/patients" element={<PatientManagement />} />
                 <Route path="/medical-records" element={<MedicalRecordManagement />} />
                 <Route path="/shifts" element={<ShiftManagement />} /> */}
             </Routes>
