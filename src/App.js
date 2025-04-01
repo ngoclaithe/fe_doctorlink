@@ -22,6 +22,7 @@ import ChangePasswordGuestPage from './pages/Guest/changePassword';
 import AccountDoctorPage from './pages/RoleDoctor/account';
 import BookingDoctorPage from './pages/RoleDoctor/bookingOfDoctor';
 import ChangePasswordDoctorPage from './pages/RoleDoctor/changePassword';
+import PatientManagement from './pages/Admin/PatientManagement';
 import ShiftManagement from './pages/Admin/ShiftManagement';
 import ReviewPage from './pages/Admin/ReviewPage';
 import BillPage from './pages/Admin/BillPage';
@@ -44,6 +45,7 @@ function App() {
         <Route path="/taikhoanbacsi" element={<AccountDoctorPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/users/doctors" element={<DoctorPageAdmin />} />
+        <Route path="/admin/users/patients" element={<PatientManagement />} />
         <Route path="/admin/specialty" element={<SpecialtyManagement />} />
         <Route path="/admin/service" element={<ServiceManagement />} />
         <Route path="/admin/shifts" element={<ShiftManagement />} />
