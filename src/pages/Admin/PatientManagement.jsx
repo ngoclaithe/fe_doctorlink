@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layoutAdmin/Layout';
 import PatientModal from '../../components/modal/PatientModal';
 import { getPatients, createPatient, updatePatient, deletePatient } from '../../services/apiPatient';
+import { motion } from "framer-motion";
 
 const PatientManagement = () => {
     const [patients, setPatients] = useState([]);
@@ -82,7 +83,13 @@ const PatientManagement = () => {
                         </thead>
                         <tbody>
                             {patients.map((patient, index) => (
-                                <tr key={patient.user_id} className="border-b">
+                                <motion.tr
+                                    key={patient.user_id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                                    className="border-b"
+                                >
                                     <td className="px-4 py-2">{index + 1}</td>
                                     <td className="px-4 py-2">{patient.full_name}</td>
                                     <td className="px-4 py-2">{patient.gender}</td>
@@ -103,7 +110,7 @@ const PatientManagement = () => {
                                             Xóa
                                         </button>
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
                         </tbody>
                     </table>
@@ -122,4 +129,4 @@ const PatientManagement = () => {
     );
 };
 
-export default PatientManagement; 
+export default PatientManagement;

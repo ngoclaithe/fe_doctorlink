@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getDoctor, deleteDoctor, registerDoctor, updateDoctor } from '../../services/apiDoctor';
 import DoctorModal from '../../components/modal/doctorModal';
 import Layout from '../../components/layoutAdmin/Layout';
+import { motion } from "framer-motion";
 
 const DoctorPageAdmin = () => {
     const [doctors, setDoctors] = useState([]);
@@ -90,8 +91,14 @@ const DoctorPageAdmin = () => {
                         </thead>
                         <tbody>
                             {doctors.length > 0 ? (
-                                doctors.map((doctor) => (
-                                    <tr key={doctor.user_id} className="hover:bg-gray-100">
+                                doctors.map((doctor, index) => (
+                                    <motion.tr
+                                        key={doctor.user_id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                                        className="hover:bg-gray-100"
+                                    >
                                         <td className="border border-gray-300 px-4 py-2">
                                             <div className="flex justify-center">
                                                 <img 
@@ -123,7 +130,7 @@ const DoctorPageAdmin = () => {
                                                 Xóa
                                             </button>
                                         </td>
-                                    </tr>
+                                    </motion.tr>
                                 ))
                             ) : (
                                 <tr>

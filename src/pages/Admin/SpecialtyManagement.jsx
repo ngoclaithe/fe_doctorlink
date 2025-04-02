@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSpecialties, deleteSpecialty, registerSpecialty, updateSpecialty } from '../../services/apiSpecialtie';
 import SpecialtyModal from '../../components/modal/specialtyModal';
 import Layout from '../../components/layoutAdmin/Layout';
+import { motion } from "framer-motion";
 
 const SpecialtyManagement = () => {
     const [specialties, setSpecialties] = useState([]);
@@ -76,28 +77,35 @@ const SpecialtyManagement = () => {
                         </thead>
                         <tbody>
                             {specialties.length > 0 ? (
-                                specialties.map((specialty) => (
-                                    <tr key={specialty.id} className="hover:bg-gray-100">
+                                specialties.map((specialty, index) => (
+                                    <motion.tr
+                                        key={specialty.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                                        className="hover:bg-gray-100"
+                                    >
                                         <td className="border border-gray-300 px-4 py-2">{specialty.name}</td>
-
                                         <td className="border border-gray-300 px-4 py-2">
                                             {specialty?.description || 'Không xác định'}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
-                                            <button
-                                                className="text-blue-600 hover:underline mr-4"
-                                                onClick={() => handleEdit(specialty)}
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button
-                                                className="text-red-600 hover:underline"
-                                                onClick={() => handleDelete(specialty.id)}
-                                            >
-                                                Xóa
-                                            </button>
+                                            <div className="flex items-center space-x-2">
+                                                <button
+                                                    className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700"
+                                                    onClick={() => handleEdit(specialty)}
+                                                >
+                                                    Sửa
+                                                </button>
+                                                <button
+                                                    className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                                                    onClick={() => handleDelete(specialty.id)}
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </div>
                                         </td>
-                                    </tr>
+                                    </motion.tr>
                                 ))
                             ) : (
                                 <tr>

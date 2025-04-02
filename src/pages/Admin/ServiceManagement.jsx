@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layoutAdmin/Layout';
 import { getDoctorServices, deleteService, createService, updateService } from '../../services/apiService';
 import ServiceModal from '../../components/modal/ServiceModal';
+import Typography from '@mui/material/Typography';
+import { motion } from "framer-motion";
 
 const ServiceManagement = () => {
     const [services, setServices] = useState([]);
@@ -58,7 +60,9 @@ const ServiceManagement = () => {
         <Layout>
             <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Quản lý dịch vụ của bác sĩ</h1>
+                    <Typography variant="h4" component="h1">
+                        Quản lý dịch vụ của bác sĩ
+                    </Typography>
                     <button
                         className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200"
                         onClick={handleAdd}
@@ -80,7 +84,13 @@ const ServiceManagement = () => {
                         </thead>
                         <tbody>
                             {services.map((service, index) => (
-                                <tr key={service.id} className="border-b">
+                                <motion.tr
+                                    key={service.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                                    className="border-b"
+                                >
                                     <td className="px-4 py-2">{index + 1}</td>
                                     <td className="px-4 py-2">BS{String(service.doctor_id).padStart(4, '0')}</td>
                                     <td className="px-4 py-2">{service.description}</td>
@@ -88,20 +98,22 @@ const ServiceManagement = () => {
                                         {new Intl.NumberFormat('vi-VN').format(service.price)} đ
                                     </td>
                                     <td className="px-4 py-2">
-                                        <button
-                                            className="text-blue-600 hover:text-blue-800 mr-4"
-                                            onClick={() => handleEdit(service)}
-                                        >
-                                            Sửa
-                                        </button>
-                                        <button
-                                            className="text-red-600 hover:text-red-800"
-                                            onClick={() => handleDelete(service.id)}
-                                        >
-                                            Xóa
-                                        </button>
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700"
+                                                onClick={() => handleEdit(service)}
+                                            >
+                                                Sửa
+                                            </button>
+                                            <button
+                                                className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                                                onClick={() => handleDelete(service.id)}
+                                            >
+                                                Xóa
+                                            </button>
+                                        </div>
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
                         </tbody>
                     </table>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllUser, deleteUser, updateUser } from '../../services/apiAuth';
 import TableUser from '../../components/common/tableUser';
 import Layout from '../../components/layoutAdmin/Layout';
+import { motion } from "framer-motion";
 
 const UserPageAdmin = () => {
     const [users, setUsers] = useState([]);
@@ -73,7 +74,13 @@ const UserPageAdmin = () => {
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                         </div>
                     ) : users.length > 0 ? (
-                        <TableUser users={users} handleEdit={handleEdit} handleDelete={handleDelete} />
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <TableUser users={users} handleEdit={handleEdit} handleDelete={handleDelete} />
+                        </motion.div>
                     ) : (
                         <div className="p-4 text-center text-gray-500">
                             Không có người dùng nào
