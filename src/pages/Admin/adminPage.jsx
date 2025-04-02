@@ -5,10 +5,10 @@ import { Route, Routes } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import SpecialtyManagement from './SpecialtyManagement';
 import ServiceManagement from './ServiceManagement';
-// import BillingManagement from './BillingManagement';
 // import DoctorManagement from './DoctorManagement';
 import PatientManagement from './PatientManagement';
 import ReviewPage from './ReviewPage';
+import BillPage from './BillPage';
 // import MedicalRecordManagement from './MedicalRecordManagement';
 // import ShiftManagement from './ShiftManagement';
 
@@ -20,6 +20,7 @@ const AdminPage = () => {
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/specialty" element={<SpecialtyManagement />} />
                 <Route path="/admin/reviews" element={<ReviewPage />} />
+                <Route path="/bill" element={<BillPage />} />
                 <Route path="/service" element={<ServiceManagement />} />
                 <Route path="/users/patients" element={<PatientManagement />} />
 
